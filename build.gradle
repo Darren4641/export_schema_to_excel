@@ -25,6 +25,9 @@ dependencies {
     // MariaDB 드라이버
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
+    // MySQL Connector
+    runtimeOnly("mysql:mysql-connector-java:8.0.33")
+
     // Apache POI (엑셀 생성)
     implementation 'org.apache.poi:poi:5.2.3'
     implementation 'org.apache.poi:poi-ooxml:5.2.3'

@@ -9,6 +9,6 @@ COPY build/libs/*.jar app.jar
 #ENV DB_PASSWORD=DB패스워드
 
 # JAR 파일을 실행합니다.
-ENTRYPOINT ["java", "-Xms512m", "-Xmx768m", "-XX:+UseG1GC", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:+UseG1GC", "-jar", "app.jar"]
 
 
