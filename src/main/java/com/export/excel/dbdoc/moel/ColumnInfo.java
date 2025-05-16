@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ColumnInfo {
     private String tableName;
+    private String tableComment;
     private String columnName;
     private String columnType;
     private String isNullable;
