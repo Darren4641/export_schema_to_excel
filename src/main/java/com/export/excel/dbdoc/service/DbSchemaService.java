@@ -38,24 +38,30 @@ public class DbSchemaService {
 
         // 2. information_schema.columns 에서 컬럼 메타데이터 조회
         String sql = """
-            SELECT TABLE_NAME,
-                   COLUMN_NAME,
-                   COLUMN_TYPE,
-                   IS_NULLABLE,
-                   COLUMN_KEY,
-                   EXTRA,
-                   COLUMN_DEFAULT,
-                   COLUMN_COMMENT
-            FROM information_schema.columns
-            WHERE table_schema = ?
-            ORDER BY TABLE_NAME, ORDINAL_POSITION
-        """;
+                SELECT
+                       c.TABLE_NAME as TABLE_NAME,
+                       t.TABLE_COMMENT as TABLE_COMMENT,
+                       c.COLUMN_NAME as COLUMN_NAME,
+                       c.COLUMN_TYPE as COLUMN_TYPE,
+                       c.IS_NULLABLE as IS_NULLABLE,
+                       c.COLUMN_KEY as COLUMN_KEY,
+                       c.EXTRA as EXTRA,
+                       c.COLUMN_DEFAULT as COLUMN_DEFAULT,
+                       c.COLUMN_COMMENT as COLUMN_COMMENT
+                FROM information_schema.columns c
+                JOIN information_schema.tables t
+                ON c.TABLE_SCHEMA = t.TABLE_SCHEMA
+                AND c.TABLE_NAME = t.TABLE_NAME
+                WHERE c.table_schema = ?
+                ORDER BY TABLE_NAME, ORDINAL_POSITION
+                """;
 
         List<ColumnInfo> columnList = jdbcTemplate.query(sql,
                 new Object[]{ schemaName },
                 (rs, rowNum) -> {
                     ColumnInfo info = new ColumnInfo();
                     info.setTableName(rs.getString("TABLE_NAME"));
+                    info.setTableComment(rs.getString("TABLE_COMMENT"));
                     info.setColumnName(rs.getString("COLUMN_NAME"));
                     info.setColumnType(rs.getString("COLUMN_TYPE"));
                     info.setIsNullable(rs.getString("IS_NULLABLE"));
@@ -144,7 +150,7 @@ public class DbSchemaService {
             // 4) (8) : 테이블 명 한글 값 (흰색)
             Cell cellValueKor = row0.createCell(8);
             cellValueKor.setCellStyle(valueStyle);
-            cellValueKor.setCellValue(""); // 실제 한글 테이블명 필요하면 여기 set
+            cellValueKor.setCellValue(cols.get(0).getTableComment()); // 실제 한글 테이블명 필요하면 여기 set
 
             // (B) 바로 아래줄 Row 1 : 헤더 (회색)
             Row headerRow = sheet.createRow(rowIndex++);
